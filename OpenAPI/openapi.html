@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.20/datatables.min.css" />
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.20/datatables.min.js"></script>
+  
+    <style>
+    body{
+        background-color: cadetblue;    
+    }
+    h1{
+        font-weight:bolder;
+    }
+    tbody{
+        font-weight:500;
+
+    }
+
+    </style>
+</head>
+<body>
+    <div class="row flex-column justify-content-center align-items-between px-5" style="width: 100vw;">
+        <h1 class="text-center mt-3">地震目錄</h1>
+        <table id="dt" class="table table-hover ">
+          <thead class="text-center">
+            <tr>
+              <th>編號</th>
+              <th>發震時間</th>
+              <th>震央位置</th>
+              <th>震源深度</th>
+              <th>芮氏規模</th>
+            </tr>
+          </thead>
+          <tbody class="text-center"></tbody>
+        </table>
+      </div>
+
+    <script>
+    $.getJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/E-A0073-001?Authorization=CWB-3170C076-B5EF-46E0-8136-4D243B19438E&downloadType=WEB&format=JSON")
+    .done(function (re) {        
+        
+        data=re.cwbopendata.dataset.catalog.earthquakeinfo;        
+        let print="";
+
+        /* 處理各個有感地震變成 tr>td */
+
+        for(let i=0;i<data.length;i++){
+            print+=`
+            <tr>
+            <td>${i+1}</td>
+            <td>${data[i].originTime}</td>
+            <td>北緯${data[i].epicenter.epicenterLat["#text"]}度，東經${data[i].epicenter.epicenterLon["#text"]}度</td>
+            <td>${data[i].depth["#text"]}${data[i].depth["@unit"]}</td>
+            <td>${data[i].magnitude["magnitudeValue"]}</td>
+            </tr>            
+            `;
+        }
+
+        $("tbody").html(print);
+        $('#dt').DataTable();
+
+
+    }).fail(function(){
+        console.log("get api fail");
+    });
+
+
+
+
+    </script>
+    
+</body>
+</html>
